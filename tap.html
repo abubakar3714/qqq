@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./tap.css">
+    <script src="https://kit.fontawesome.com/92d70a2fd8.js"></script>
+    <!--=============== BOXICONS ===============-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+
+    <!--=============== CSS ===============-->
+    <link rel="stylesheet" href="./home.css">
+
+    <title>CoinQuarry</title>
+</head>
+<body style="background-color:rgb(255, 255, 255);" onload="myFunction()" style="margin:0;">
+  <!-- loader started -->
+  <div id="loader"></div>
+  <div style="display:none;" id="myDiv" class="animate-bottom">
+  <!-- loader end -->
+  <div class="app-container">
+      <img src="./Pilhas_de_moedas_e_saco_de_dinheiro____Vetor_Premium-removebg-preview.png" alt="">
+    <p>Mining Status: <span id="mining-status">Mining...</span></p>
+    <p>Mining Time: <span id="mining-time">0 seconds</span></p>
+    <p>Crypto Balance: <span id="crypto-balance">0.0000 BTC</span></p>
+<button id="claim-button"><a href=""> Claim Coin</a></button>
+
+  </div>
+  <!--=============== HEADER ===============-->
+  <header class="header" id="header">
+    <nav class="nav container">
+        <a href="#" class="nav__logo"><h1>Crypto Mining Web App</h1></a>
+        <div class="nav__menu" id="nav-menu">
+            <ul style="justify-content: space-evenly;" class="nav__list">
+                <li class="nav__item">
+                    <a href="#home" class="nav__link active-link">
+                        <i class='bx bx-home-alt nav__icon'></i>
+                        <span class="nav__name">Home</span>
+                    </a>
+                </li>
+                
+                <li class="nav__item">
+                    <a href="#about" class="nav__link">
+                      <i class="fa-solid fa-list-check"></i>
+                        <span class="nav__name">Task</span>
+                    </a>
+                </li>
+
+                <li class="nav__item">
+                    <a href="#skills" class="nav__link">
+                      <i class="fa-solid fa-user-group"></i>
+                      <span class="nav__name">Invite</span>
+                    </a>
+                </li>
+
+                <li class="nav__item">
+                    <a href="#portfolio" class="nav__link">
+                      <i class="fa-solid fa-wallet"></i>
+                        <span class="nav__name">Wallet</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <main>
+        </main>
+        <img src="assets/img/perfil.png" alt="" class="nav__img">
+    </nav>
+</header>
+<script src="./home.js"></script>
+</body>
+</html>

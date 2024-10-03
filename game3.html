@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+:root {
+    --primary-color: #00ff00;
+    --secondary-color: #ff00ff;
+    --background-color: #000033;
+    --text-color: #ffffff;
+    --enemy-color: #ff0000;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Orbitron', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+#game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+header h1 {
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    text-shadow: 0 0 10px var(--primary-color);
+}
+
+#game-controls {
+    margin-bottom: 1rem;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.2rem;
+    font-family: 'Orbitron', sans-serif;
+    cursor: pointer;
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    border: none;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    background-color: var(--secondary-color);
+    transform: scale(1.05);
+}
+
+#game-stats {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+#game-area {
+    position: relative;
+    width: 600px;
+    height: 400px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--primary-color);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 20px var(--primary-color);
+}
+
+.enemy {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-color: var(--enemy-color);
+    border-radius: 50%;
+    cursor: crosshair;
+    transition: all 0.2s ease;
+}
+
+.enemy:hover {
+    transform: scale(1.1);
+}
+
+#game-over {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 2rem;
+    border-radius: 10px;
+    text-align: center;
+}
+
+#game-over h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+#game-over p {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.hidden {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    #game-area {
+        width: 90vw;
+        height: 60vw;
+    }
+}
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <header>
+            <h1>Click Defender</h1>
+        </header>
+        <main>
+            <div id="game-controls">
+                <button id="start-btn" class="btn">Start Game</button>
+            </div>
+            <div id="game-stats">
+                <div id="score">Score: <span>0</span></div>
+                <div id="health">Health: <span>5</span></div>
+                <div id="wave">Wave: <span>1</span></div>
+            </div>
+            <div id="game-area"></div>
+            <div id="game-over" class="hidden">
+                <h2>Game Over</h2>
+                <p>Your final score: <span id="final-score"></span></p>
+                <button id="restart-btn" class="btn">Restart</button>
+            </div>
+        </main>
+    </div>
+    <script>class ShooterGame {
+        constructor() {
+            this.score = 0;
+            this.health = 5;
+            this.wave = 1;
+            this.spawnTime = 2000;
+            this.gameInterval = null;
+    
+            this.elements = {
+                startBtn: document.getElementById('start-btn'),
+                gameArea: document.getElementById('game-area'),
+                scoreDisplay: document.getElementById('score').querySelector('span'),
+                healthDisplay: document.getElementById('health').querySelector('span'),
+                waveDisplay: document.getElementById('wave').querySelector('span'),
+                gameOverDisplay: document.getElementById('game-over'),
+                restartBtn: document.getElementById('restart-btn'),
+                finalScoreDisplay: document.getElementById('final-score')
+            };
+    
+            this.bindEvents();
+        }
+    
+        bindEvents() {
+            this.elements.startBtn.addEventListener('click', () => this.startGame());
+            this.elements.restartBtn.addEventListener('click', () => this.restartGame());
+        }
+    
+        startGame() {
+            this.resetGame();
+            this.updateUI();
+            this.elements.gameOverDisplay.classList.add('hidden');
+            this.elements.startBtn.classList.add('hidden');
+            this.gameInterval = setInterval(() => this.spawnEnemy(), this.spawnTime);
+        }
+    
+        resetGame() {
+            this.score = 0;
+            this.health = 5;
+            this.wave = 1;
+            this.spawnTime = 2000;
+        }
+    
+        spawnEnemy() {
+            const enemy = document.createElement('div');
+            enemy.classList.add('enemy');
+    
+            const gameAreaRect = this.elements.gameArea.getBoundingClientRect();
+            const x = Math.random() * (gameAreaRect.width - 40);
+            const y = Math.random() * (gameAreaRect.height - 40);
+    
+            enemy.style.left = `${x}px`;
+            enemy.style.top = `${y}px`;
+    
+            this.elements.gameArea.appendChild(enemy);
+    
+            enemy.addEventListener('click', () => this.handleEnemyClick(enemy));
+    
+            setTimeout(() => {
+                if (this.elements.gameArea.contains(enemy)) {
+                    enemy.remove();
+                    this.loseHealth();
+                }
+            }, this.spawnTime - 500);
+        }
+    
+        handleEnemyClick(enemy) {
+            this.score++;
+            enemy.remove();
+            this.updateUI();
+            this.checkWave();
+        }
+    
+        loseHealth() {
+            this.health--;
+            this.updateUI();
+            if (this.health <= 0) {
+                this.gameOver();
+            }
+        }
+    
+        updateUI() {
+            this.elements.scoreDisplay.textContent = this.score;
+            this.elements.healthDisplay.textContent = this.health;
+            this.elements.waveDisplay.textContent = this.wave;
+        }
+    
+        checkWave() {
+            if (this.score % 5 === 0) {
+                this.wave++;
+                clearInterval(this.gameInterval);
+                this.spawnTime = Math.max(500, this.spawnTime - 200);
+                this.gameInterval = setInterval(() => this.spawnEnemy(), this.spawnTime);
+                this.updateUI();
+            }
+        }
+    
+        gameOver() {
+            clearInterval(this.gameInterval);
+            this.elements.gameOverDisplay.classList.remove('hidden');
+            this.elements.finalScoreDisplay.textContent = this.score;
+        }
+    
+        restartGame() {
+            this.elements.gameArea.innerHTML = '';
+            this.startGame();
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        const game = new ShooterGame();
+    });</script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./task.css">
+    <script src="https://kit.fontawesome.com/92d70a2fd8.js"></script>
+    <!--=============== BOXICONS ===============-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css">
+
+    <!--=============== CSS ===============-->
+    <link rel="stylesheet" href="assets/css/styles.css">
+
+    <title>CoinQuarry</title>
+</head>
+<body style="background-color:rgb(255, 255, 255);" onload="myFunction()" style="margin:0;">
+  <!-- loader started -->
+  <div id="loader"></div>
+  <div style="display:none;" id="myDiv" class="animate-bottom">
+  <!-- loader end -->
+  <div class="app-container">
+
+
+  </div>
+  <!--=============== HEADER ===============-->
+  <header class="header" id="header">
+    <nav class="nav container">
+        <a href="#" class="nav__logo"><h1>Crypto Mining Web App</h1></a>
+        <div class="nav__menu" id="nav-menu">
+            <ul style="justify-content: space-evenly;" class="nav__list">
+                <li class="nav__item">
+                    <a href="./home.html" class="nav__link active-link">
+                        <i class='bx bx-home-alt nav__icon'></i>
+                        <span class="nav__name">Home</span>
+                    </a>
+                </li>
+                
+                <li class="nav__item">
+                    <a href="#about" class="nav__link">
+                      <i class="fa-solid fa-list-check"></i>
+                        <span class="nav__name">Task</span>
+                    </a>
+                </li>
+
+                <li class="nav__item">
+                    <a href="#skills" class="nav__link">
+                      <i class="fa-solid fa-user-group"></i>
+                      <span class="nav__name">Invite</span>
+                    </a>
+                </li>
+
+                <li class="nav__item">
+                    <a href="#portfolio" class="nav__link">
+                      <i class="fa-solid fa-wallet"></i>
+                        <span class="nav__name">Wallet</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <img src="assets/img/perfil.png" alt="" class="nav__img">
+    </nav>
+</header>
+<main>
+  <h2>Complete the task and earn more coin</h2>
+  
+  <div id="myBtnContainer">
+    <button class="btn active" onclick="filterSelection('all')"> Show all</button>
+    <button class="btn" onclick="filterSelection('cars')"> Cinema</button>
+    <button class="btn" onclick="filterSelection('animals')"> Special</button>
+    <button class="btn" onclick="filterSelection('fruits')"> League</button>
+    <button class="btn" onclick="filterSelection('colors')"> Colors</button>
+  </div>
+  
+  <div class="container">
+    <a href="./game.html"><div class="filterDiv cars"><p>play Fish</p></div></a>
+    <a href="./game4.html"><div class="filterDiv colors fruits">Play Ball</div></a>
+    <a href="#"><div class="filterDiv cars">Volvo  Tiktok</div></a>
+    <a href="#"><div class="filterDiv colors">Red  Tiktok</div></a>
+    <a href="#"><div class="filterDiv cars">Ford Tiktok</div></a>
+    <a href="#"><div class="filterDiv colors">Blue Tiktok</div></a>
+      <a href="#"><div class="filterDiv colors">Blue Tiktok</div></a>
+    <a href="#"><div class="filterDiv animals">Follow us on </div></a>
+    <a href="#"><div class="filterDiv animals">Follow us on instergram Tiktok</div></a>
+    <a href="#"> <div class="filterDiv fruits">Melon Tiktok</div></a>
+    <a href="#"><div class="filterDiv fruits animals">Kiwi Tiktok</div></a>
+  </div>
+          </main>
+<script src="./task.js"></script>
+</body>
+</html>

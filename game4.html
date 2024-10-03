@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        :root {
+  --game-score: '0';
+  --pad-color: sienna;
+  --pad-color-2: #444;
+}
+html {
+  background:
+    url('https://contentservice.mc.reyrey.net/image_v1.0.0/?id=681696df-cd3a-54e8-bac1-de14610fecea&637721765623751973'),
+    url('https://contentservice.mc.reyrey.net/image_v1.0.0/?id=379b2f69-794e-5544-9c2a-d6c5944ba2e7&637721774543057266');
+  background-size: auto 100%, auto 100%;
+  background-position: 0 100%, 0 0;
+  background-repeat: repeat-x;
+  cursor: ew-resize;
+  min-height: 100vh;
+/*   display: grid;
+  place-items: center; */
+  overflow: hidden;
+  /*   animation: move_bg 10s linear infinite; */
+}
+@keyframes move_bg {
+  100% { background-position: calc(-3.56 * 100vh) 100%, calc(-1.78 * 100vh) 0; }
+}
+
+#mute_btn, 
+#request {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 900;
+  font-size: 0;
+}
+
+#request {
+  top: 5px;
+  left: 50px;
+  background: black;
+  width: 25px;
+  height: 25px;
+}
+.material-icons-outlined {
+  font-family: 'Material Icons', sans-serif;
+  font-size: 36px;
+  color: white;
+  cursor: pointer;
+}
+
+#combo_display {
+  position: fixed;
+  top: 50%;
+  right: 10px;
+  color: white;
+  font-size: 12px;
+  font-family: 'Press Start 2P', sans-serif;
+  text-align: center;
+}
+
+#combo_display span {
+  font-family: 'Press Start 2P', sans-serif;
+  font-size: 48px;
+}
+
+#start_message {
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+  font-size: 36px;
+  color: white;
+  font-family: 'Press Start 2P', sans-serif;
+  transition: .75s;
+  user-select: none;
+  background: black;
+  padding: 2rem;
+  box-sizing: border-box;
+  border-width: 10px;
+  border-style: solid;
+  border-top-color: #630;
+  border-right-color: sienna;
+  border-bottom-color: sienna;
+  border-left-color: #630;
+  box-shadow: 0 0 25px black;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  z-index: 1;
+}
+#start_message p {
+  /*   background: red; */
+  font-size: 20px;
+  margin-top: 3rem;
+  margin-bottom: 0;
+  box-sizing: border-box;
+  /*   padding: 1rem; */
+}
+#start_message p span {
+  font-size: 36px;
+  line-height: 150%;
+}
+
+.tap_to_start {
+  animation: start 5s linear infinite;
+}
+@keyframes start {
+  8% { opacity: 0; }
+  10% { opacity: 1; }
+  18% { opacity: 0; }
+  20% { opacity: 1; }
+}
+
+.show_start {
+  z-index: -1 !important;
+  opacity: 0;
+}
+
+.game_stats {
+  width: 100%;
+  font-size: 0;
+  margin-top: 3rem;
+}
+.game_stats span {
+  font-size: 20px;
+  line-height: 150%;
+  position: relative;
+  display:inline-block;
+  box-sizing: border-box;
+  width: 25%;
+}
+.game_round:before,
+.game_blocks:before,
+.game_combo:before,
+.game_score:before {
+  content:'';
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -100%);
+  font-size: 14px;
+}
+.game_round:before {
+  content:'ROUNDS';
+}
+.game_blocks:before {
+  content:'GEMS';
+}
+.game_combo:before {
+  content:'COMBO';
+}
+.game_score:before {
+  content:'SCORE';
+}
+
+#rail {
+  width: 100%;
+  height: 3vh;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  background:    
+    linear-gradient(to bottom, silver .25vh, transparent .5vh, transparent .75vh, gray 1vh, gray 1.75vh, transparent 1.75vh),
+    linear-gradient(to right, transparent 24%, #630 24%, #630 26%, transparent 26%, transparent 74%, #630 74%, #630 76%, transparent 76%);  
+  background-size: 200% 100%;
+  background-repeat: repeat-x;
+  background-position: 0 0;
+  box-sizing: border-box;
+  filter: drop-shadow(0 5px 5px black);
+  /*   animation: rail 6s linear infinite; */
+}
+@keyframes rail {
+  100% { background-position: 200% 0; }
+}
+
+#paddle {
+  width: max(15vw,20vh);
+  height: 3vh;
+  background: 
+    linear-gradient(to bottom, var(--pad-color), transparent),
+    linear-gradient(to bottom, transparent 80%, #666 80%, #666 100%, transparent 100%),
+    linear-gradient(to right, sienna 45%, transparent 45%, transparent 55%, sienna 55%);
+  background-size: 100% 100%, 100% 100%, 10% 70%;
+  background-repeat: repeat-x;
+  position: fixed;
+  bottom: 5vh;
+  left: 0;
+  transform: translateX(-50%);
+  border-radius: 5px;
+  z-index: -1;
+  text-align: center;
+  font-family: monospace;
+  line-height: 3vh;
+  font-size: 10px;
+  user-select: none;
+  filter: drop-shadow(0 0 5px rgba(0,0,0,.5));
+}
+#paddle:before {
+  content: var(--game-score);
+  position: absolute;
+  left: 0;
+  top:0;
+  text-align: center;
+  width: 100%;
+  transform: translateY(-100%);
+  color: white;
+  font-size: 20px;
+}
+#paddle:after {
+  content: '';
+  width: 4vh;
+  height: 4vh;
+  background: 
+    radial-gradient(circle, var(--pad-color-2) 25%, rgba(0,0,0,.25) 25%, transparent 75%),
+    radial-gradient(circle, transparent 50%, var(--pad-color-2) 60%), 
+    conic-gradient(sienna 0% 12.5%, var(--pad-color-2) 12.5% 25%, sienna 25% 37.5%, var(--pad-color-2) 37.5% 50%, sienna 50% 62.5%, var(--pad-color-2) 62.5% 75%, sienna 75% 87.5%, var(--pad-color-2) 87.5% 100%);
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translate(-50%, 55%);
+  border-radius: 50%;
+  filter: drop-shadow(0 0 5px rgba(0,0,0,.5));
+  -webkit-animation: roll .5s linear infinite;
+  animation: roll .5s linear infinite;
+  z-index: -1;
+}
+
+@keyframes roll {
+  100% { transform: translate(-50%, 50%) rotate(360deg); }
+}
+
+.paddle_rock {
+  animation: rock .5s linear forwards;
+  transform-origin: 50% 100%;
+}
+@keyframes rock {
+  25% { transform: translateX(-50%) rotate(5deg); }
+  75% { transform: translateX(-50%) rotate(-5deg); }
+}
+
+.pad_control {
+  height: 100%;
+  float: left;
+  /*   outline: 1px solid red; */
+  transform: translateY(-50%);
+}
+.pad_left,
+.pad_right{
+  width: 25%;
+}
+.pad_center {
+  width: 50%;
+}
+
+.block {
+  width: calc(10vw - 10px);
+  height: 6vh;
+  position: absolute;
+  border: 2px solid #111;
+  box-sizing: border-box;
+  /*   background: #FF232F; */
+  border-width: 5px;
+  border-style: solid;
+  border-radius: 5px;
+  border-top-color: rgba(0,0,0,.5);
+  border-left-color: rgba(0,0,0,.5);
+  border-right-color: rgba(255,255,255,.5);
+  border-bottom-color: rgba(255,255,255,.5);
+  margin-left: 5px;
+  text-align: center;
+  font-family: monospace;
+  line-height: 5vh;
+/*   z-index: 1; */
+}
+
+.dead {
+  width: calc(10vw - 10px);
+  height: calc(5vh - 10px);
+  position: absolute;
+  border: 2px solid #111;
+  box-sizing: border-box;
+  /*   background: #FF232F; */
+  border-width: 5px;
+  border-style: solid;
+  border-radius: 5px;
+  border-top-color: rgba(0,0,0,.5);
+  border-left-color: rgba(0,0,0,.5);
+  border-right-color: rgba(255,255,255,.5);
+  border-bottom-color: rgba(255,255,255,.5);
+  margin-left: 5px;
+  text-align: center;
+  font-family: monospace;
+  line-height: calc(4vh - 10px);
+  /*   animation: dead .5s linear forwards;  */
+}
+@keyframes dead {
+  100% { 
+    transform: scale(.1) rotateY(1080deg); 
+    opacity: 0; }
+}
+.btn{
+  background-color: blue;
+  padding: 12px 16px;
+  border-radius: 25px;
+}
+
+
+#ball {
+  width: max(1vw,20px);
+  height: max(1vw,20px);
+  background: gold;
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  z-index: 100;
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+.trail {
+  width: max(1vw,20px);
+  height: max(1vw,20px);
+  background: gold;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 100;
+  pointer-events: none;
+  border-radius: 50%;
+  opacity: .25;
+  animation: trail .5s linear forwards;
+}
+
+@keyframes trail {
+  100% { transform: scale(0); }
+}
+    </style>
+</head>
+<body><div id='rail'></div>
+    <div id='combo_display'>
+      <span id='combo_span'>0</span>
+      <br>
+      BLOCK<br>COMBO <br> <a href="./home.html" ><button class="btn" onclick="myFunction()">back to web</button></a>
+    </div>
+    <div id='paddle'>
+      <div class='pad_control pad_left'></div>
+      <div class='pad_control pad_center'></div>
+      <div class='pad_control pad_right'></div>
+    </div>
+    <div id='ball'></div>
+    <div id='start_message'>
+      <span class='tap_to_start'>TAP TO START</span>
+      <p>HI SCORE<br>
+        <span>0</span>
+      </p>
+      <div class='game_stats'>
+        <span class='game_round'>0</span>
+        <span class='game_blocks'>0</span>
+        <span class='game_combo'>0</span>
+        <span class='game_score'>0</span>
+      </div>  
+    </div>
+    <div id='mute_btn' onclick='muteSound(this)'>
+      <span class="material-icons-outlined">volume_up</span>    
+    </div>
+    <!-- <div id='request' onclick='onClick()'></div> -->
+    
+    <audio src="http://contentservice.mc.reyrey.net/audio_v1.0.0/?id=73702d54-159c-5403-9706-99824dee8d9e" id='gem_collect' preload></audio>
+    <audio src="http://contentservice.mc.reyrey.net/audio_v1.0.0/?id=0c93115f-e01d-540b-9109-ae2229e92233" id='bg_music' preload loop></audio>
+    <audio src="http://contentservice.mc.reyrey.net/audio_v1.0.0/?id=992018b3-27b2-5c3b-9d8f-ec6e59cb24ad" id='miss_ball' preload></audio>
+    <audio src="http://contentservice.mc.reyrey.net/audio_v1.0.0/?id=c187b09c-169a-588a-bc72-3069b29d5101" id='you_died' preload></audio>
+
+    
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <script>
+        const pad = document.querySelector('#paddle')
+const ball = document.querySelector('#ball')
+const sm = document.querySelector('#start_message')
+const combo_span = document.querySelector('#combo_span')
+const bg_music = document.querySelector('#bg_music')
+bg_music.volume = .25
+const gem_collect = 'http://contentservice.mc.reyrey.net/audio_v1.0.0/?id=73702d54-159c-5403-9706-99824dee8d9e'
+const miss_ball = document.querySelector('#miss_ball')
+const you_died = document.querySelector('#you_died')
+const game_round = document.querySelector('.game_round')
+const game_blocks = document.querySelector('.game_blocks')
+const game_combo = document.querySelector('.game_combo')
+const game_score = document.querySelector('.game_score')
+let score = 0
+let misses = 1
+let round = 1
+var best_combo = 0
+var combo = []
+let pad_l = window.innerWidth*.45
+var kd = false
+var btn_speed = 1
+var frames = 60
+
+function trackKeys(e) {
+  if(kd) {    
+    if(btn_speed < 30) {
+      btn_speed += 5
+    }
+    // console.log(k)
+    if(kd == 37 && pad_l > 0) {
+      pad_l -= btn_speed
+    }
+    if(kd == 39 && pad_l < window.innerWidth) {
+      pad_l += btn_speed
+    }  
+    pad.style.left = pad_l + 'px'
+  }  
+}
+
+window.addEventListener('keydown', function(e){
+  kd = e.keyCode
+})
+window.addEventListener('keyup', function(){
+  kd = false
+  btn_speed = 5
+})
+
+function muteSound(e) {
+  if(e.classList.contains('muted')) {
+    bg_music.volume = .25
+    miss_ball.volume = 1
+    you_died.volume = 1
+    e.classList.remove('muted')
+    e.children[0].innerHTML = 'volume_up'
+  } else {
+    bg_music.volume = 0
+    miss_ball.volume = 0
+    you_died.volume = 0
+    e.classList.add('muted')
+    e.children[0].innerHTML = 'volume_off'
+  }
+}
+
+function borderRadius() {
+  return Math.floor(Math.random()*40) + 'px'
+}
+
+function cloneBall() {
+  var cln = ball.cloneNode(true)
+
+  cln.classList.add('trail')
+  cln.id = ''
+  document.body.appendChild(cln)
+
+  setTimeout(function() {
+    document.querySelectorAll('.trail')[0].remove()
+  }, 500)
+}
+
+let blocks = 60
+var blocksPer = 10
+if(window.innerHeight > window.innerWidth) {
+  blocks = 30
+  blocksPer = 5
+}
+function addBlocks() {
+  for(var i=0;i<blocks;i++) {
+    var b = document.createElement('div')
+    b.className = 'block'
+    b.style.width = window.innerWidth / blocksPer + 'px'
+    b.style.backgroundColor = 'hsl('+(Math.floor(i/blocksPer))*60+'deg,100%,40%)'
+    b.style.left = (i % blocksPer)*(window.innerWidth*(100/blocksPer/100)) + 'px'
+    b.style.top = Math.floor(i/blocksPer)*(window.innerHeight*.08) + 'px'
+    b.style.borderRadius = ''+borderRadius()+' '+borderRadius()+' '+borderRadius()+' '+borderRadius()+''
+    b.innerHTML = (100*round) - Math.floor(i/blocksPer)*10
+    document.body.appendChild(b)
+  }
+}
+window.addEventListener('mousemove', function(e){
+  var x = e.clientX
+  var y = e.clientY
+  pad.style.left = x + 'px'
+})
+
+window.addEventListener('touchmove', function(e){
+  var x = e.touches[0].clientX
+  var y = e.clientY
+  pad.style.left = x + 'px'
+})
+
+var ball_t = -1,
+    ball_l = Math.random() > .5 ? 1 : -1,
+    ball_speed = 5
+
+function playTheGame(){
+  // initial game reset stuff
+  bg_music.play()
+  sm.removeEventListener('click', playTheGame)
+  misses = 1
+  score = 0
+  round = 1
+  best_combo = 0
+  ball_speed = 5
+  resetBlocks()  
+  document.documentElement.style.setProperty('--pad-color', "sienna")
+  document.documentElement.style.setProperty('--game-score', "'"+score+"'")
+  // pad.style.width = (window.innerWidth*.15) / misses + 'px'
+
+  function moveBall() {
+    trackKeys()
+    var ball_loc = ball.getBoundingClientRect()
+    if(ball_loc.left + ball_loc.width >= window.innerWidth) {
+      ball_l = -1
+    } 
+    if(ball_loc.left <= 0) {
+      ball_l = 1
+    }
+    if(ball_loc.top + ball_loc.height >= window.innerHeight) {
+      ball_t = -1
+      misses++
+      if(misses == 2) {
+        document.documentElement.style.setProperty('--pad-color', "hsla(0deg,100%,50%,33%)")
+      }
+      if(misses == 3) {
+        document.documentElement.style.setProperty('--pad-color', "hsla(0deg,100%,50%,66%)")
+      }
+      if(misses > 3) {
+        document.documentElement.style.setProperty('--pad-color', "hsla(0deg,100%,50%,100%)")
+      }
+      miss_ball.play()
+      comboScore()
+    } 
+    if(ball_loc.top <= 0) {
+      ball_t = 1
+    }  
+
+    ball.style.left = ball_loc.left + (ball_l * ball_speed) + 'px'
+    ball.style.top = ball_loc.top + (ball_t * ball_speed) + 'px'  
+
+    // collison detection
+    var half_ball = ball_loc.width*.5
+    if(ball_t > 0) {
+      var b_class = document.elementFromPoint(ball_loc.left + half_ball, ball_loc.top + ball_loc.width)
+      } else {
+        var b_class = document.elementFromPoint(ball_loc.left + half_ball, ball_loc.top)
+        }
+
+    var b_class_loc = b_class.getBoundingClientRect()    
+
+    //control angles based on where it hits paddle
+    function rockPaddle() {
+      pad.classList.add('paddle_rock')
+      setTimeout( function(){
+        pad.classList.remove('paddle_rock')
+      }, 500)
+    }
+
+    if(b_class.classList.contains('pad_right')) {
+      ball_t = -1
+      ball_l = 1
+      rockPaddle()
+      comboScore()
+    }
+    if(b_class.classList.contains('pad_center')) {
+      ball_t = -1.25
+      rockPaddle()
+      comboScore()
+    }
+    if(b_class.classList.contains('pad_left')) {
+      ball_t = -1
+      ball_l = -1
+      rockPaddle()
+      comboScore()
+    }
+
+    // if ball hits block
+
+    if(b_class.classList.contains('block')) {    
+      ball_t = -ball_t
+      if(ball_speed < 15.5) {
+        ball_speed += .1  
+      }
+      b_class.className = 'dead'
+      combo.push(+b_class.innerHTML)
+      combo_span.innerHTML = combo.length
+      if(combo.length >= 10) {
+        frames = 30
+      } else {
+        frames = 60
+      }
+
+      if(!document.querySelector('.muted')) {
+        var got_gem = new Audio(gem_collect)
+        got_gem.volume = Math.random() < .5 ? 1 : .5
+        got_gem.play()  
+      }      
+
+      document.querySelectorAll('.dead')[0].remove() 
+
+      if(!document.querySelector('.block')) {
+        setTimeout(function(){
+          round++
+          addBlocks()  
+        }, 500)
+      }
+    }  
+
+    // trail trail trail
+    cloneBall()
+
+    // when dead
+    if(misses > 3) {
+      setTimeout(function(){
+        you_died.play()  
+      },750)      
+      ball.style.left = ''
+      ball.style.top = ''
+      clearInterval(rungame)
+
+      game_round.innerHTML = round
+      game_blocks.innerHTML = (round*blocks) - document.querySelectorAll('.block').length
+      game_combo.innerHTML = best_combo
+      game_score.innerHTML = score
+
+      sm.addEventListener('click', playTheGame)
+      sm.classList.toggle('show_start')
+      checkHighScore()
+    }   
+    // setTimeout(moveBall, 1000/frames)
+  }
+
+
+  //add hide message, place ball, and start game action
+  sm.classList.toggle('show_start')
+  ball.style.left = Math.random()*(window.innerWidth - 50) + 50 + 'px'
+  ball.style.top = window.innerHeight*.75 + 'px'
+  // moveBall()
+  var rungame = setInterval(moveBall, 1000/frames)  
+
+  }
+
+function comboScore() {
+  var length = combo.length
+  if(length > best_combo) {
+    best_combo = length
+  }
+  var sum = combo.reduce(function(a, b) { return a + b; }, 0);
+  score += length * sum
+  document.documentElement.style.setProperty('--game-score', "'"+score+"'")
+  // console.log(length * sum)
+  combo = []
+  combo_span.innerHTML = 0
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function(){
+    addBlocks()
+    sm.addEventListener('click', playTheGame)
+  }, 500)
+});
+
+function resetBlocks() {
+  let b = document.querySelectorAll('.block')
+  b.forEach(function(elm) { elm.remove() })
+
+  addBlocks()
+}
+
+function checkHighScore() {
+  if(localStorage.getItem('gem-miner-score')) {
+    if(score > localStorage.getItem('gem-miner-score')) {
+      localStorage.setItem('gem-miner-score', score)
+      document.querySelector('#start_message p span').innerHTML = localStorage.getItem('gem-miner-score')
+    }
+    document.querySelector('#start_message p span').innerHTML = localStorage.getItem('gem-miner-score')
+  } else {
+    localStorage.setItem('gem-miner-score', 0)    
+  }
+}
+checkHighScore()
+
+function onClick() {
+  console.log('clicked')
+    // feature detect
+    if (typeof DeviceMotionEvent.requestPermission === 'function') {
+      DeviceMotionEvent.requestPermission()
+        .then(permissionState => {
+          if (permissionState === 'granted') {
+            window.addEventListener('devicemotion', motion, false);
+          }
+        })
+        .catch(console.error);
+    } else {
+      // handle regular non iOS 13+ devices
+    }
+  }
+
+if(window.DeviceMotionEvent){
+  window.addEventListener("devicemotion", motion, false);
+}else{
+  console.log("DeviceMotionEvent is not supported");
+}
+
+function motion(event){
+  var x = event.accelerationIncludingGravity.x
+  if(x > 5) {
+    x = 5
+  }
+  if(x < -5) {
+    x = -5
+  }
+  pad.style.left = x < 0 ? (Math.abs(x)*10) + 50 + '%' : 50 - (Math.abs(x)*10) + '%'
+  // console.log({x});
+}
+
+
+
+function myFunction() {
+  alert("are you sure you want to quit!");
+    </script>
+</body>
+</html>
